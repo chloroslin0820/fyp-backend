@@ -1,22 +1,24 @@
-package com.fsse2401.backend_project_redo02.data.product.dto;
+package com.fsse2401.backend_project_redo02.data.product.dto.response;
 
 import com.fsse2401.backend_project_redo02.data.product.domainObject.ProductResData;
 
 import java.math.BigDecimal;
 
-public class GetAllProductResDto {
+public class ProductResDto {
     private Integer pid;
     private String name;
+    private String description;
     private String imgUrl;
     private BigDecimal price;
-    private boolean hasStock;
+    private Integer stock;
 
-    public GetAllProductResDto(ProductResData data) {
+    public ProductResDto(ProductResData data) {
         this.pid = data.getPid();
         this.name = data.getName();
+        this.description = data.getDescription();
         this.imgUrl = data.getImgUrl();
         this.price = data.getPrice();
-        this.hasStock = data.getStock() > 0;
+        this.stock = data.getStock();
     }
 
     public Integer getPid() {
@@ -35,6 +37,14 @@ public class GetAllProductResDto {
         this.name = name;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public String getImgUrl() {
         return imgUrl;
     }
@@ -51,11 +61,11 @@ public class GetAllProductResDto {
         this.price = price;
     }
 
-    public boolean isHasStock() {
-        return hasStock;
+    public Integer getStock() {
+        return stock;
     }
 
-    public void setHasStock(boolean hasStock) {
-        this.hasStock = hasStock;
+    public void setStock(Integer stock) {
+        this.stock = stock;
     }
 }

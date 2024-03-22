@@ -1,42 +1,22 @@
-package com.fsse2401.backend_project_redo02.data.product.entity;
+package com.fsse2401.backend_project_redo02.data.product.domainObject;
 
-import com.fsse2401.backend_project_redo02.data.product.domainObject.CreateProductReqData;
-import jakarta.persistence.*;
+import com.fsse2401.backend_project_redo02.data.product.dto.request.CreateProductReqDto;
 
 import java.math.BigDecimal;
 
-@Entity
-@Table(name = "product")
-public class ProductEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer pid;
-    @Column(nullable = false)
+public class CreateProductReqData {
     private String name;
     private String description;
     private String imgUrl;
-    @Column(nullable = false)
     private BigDecimal price;
-    @Column(nullable = false)
     private Integer stock;
 
-    public ProductEntity(CreateProductReqData data) {
-        this.name = data.getName();
-        this.description = data.getDescription();
-        this.imgUrl = data.getImgUrl();
-        this.price = data.getPrice();
-        this.stock = data.getStock();
-    }
-
-    public ProductEntity() {
-    }
-
-    public Integer getPid() {
-        return pid;
-    }
-
-    public void setPid(Integer pid) {
-        this.pid = pid;
+    public CreateProductReqData(CreateProductReqDto dto) {
+        this.name = dto.getName();
+        this.description = dto.getDescription();
+        this.imgUrl = dto.getImgUrl();
+        this.price = dto.getPrice();
+        this.stock = dto.getStock();
     }
 
     public String getName() {

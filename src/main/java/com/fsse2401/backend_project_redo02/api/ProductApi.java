@@ -1,12 +1,13 @@
 package com.fsse2401.backend_project_redo02.api;
 
+import com.fsse2401.backend_project_redo02.data.product.domainObject.CreateProductReqData;
 import com.fsse2401.backend_project_redo02.data.product.domainObject.ProductResData;
-import com.fsse2401.backend_project_redo02.data.product.dto.GetAllProductResDto;
+import com.fsse2401.backend_project_redo02.data.product.dto.request.CreateProductReqDto;
+import com.fsse2401.backend_project_redo02.data.product.dto.response.GetAllProductResDto;
+import com.fsse2401.backend_project_redo02.data.product.dto.response.ProductResDto;
 import com.fsse2401.backend_project_redo02.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,5 +28,14 @@ public class ProductApi {
             getAllProductResDtoList.add(new GetAllProductResDto(productResData));
         }
         return getAllProductResDtoList;
+    }
+
+    @PostMapping("/create")
+    public ProductResDto createProduct(@RequestBody CreateProductReqDto reqDto){
+        return new ProductResDto(
+                productService.createProduct(
+                        new CreateProductReqData(reqDto)
+                )
+        );
     }
 }
