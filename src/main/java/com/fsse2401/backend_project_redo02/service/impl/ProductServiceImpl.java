@@ -32,17 +32,87 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public ProductResData getProductByPid(Integer pid){
+        return new ProductResData(productRepository.findById(pid).get());
+    }
+
+    @Override
     public ProductResData createProduct(CreateProductReqData createProductReqData){
         checkDataMissingExceptionByCreateProductReqData(createProductReqData);
         checkInvalidInputExceptionByPriceBigDecimal(createProductReqData.getPrice());
         checkInvalidInputExceptionByStockInteger(createProductReqData.getStock());
         checkInvalidInputExceptionByImgUrlString(createProductReqData.getImgUrl());
-
         ProductEntity entity = new ProductEntity(createProductReqData);
         productRepository.save(entity);
         return new ProductResData(entity);
     }
 
+    @Override
+    public boolean updateProductPriceByPid(Integer pid, Integer price){
+        checkInvalidInputExceptionByPriceBigDecimal(BigDecimal.valueOf(price));
+        ProductEntity foundProductEntity = productRepository.findById(pid).get();
+        foundProductEntity.setPrice(BigDecimal.valueOf(price));
+        productRepository.save(foundProductEntity);
+        return true;
+    }
+
+    @Override
+    public boolean discountProductPriceByPid(Integer pid, Integer discount){
+        checkInvalidInputExceptionByDiscountInteger(discount);
+        ProductEntity foundProductEntity = productRepository.findById(pid).get();
+        foundProductEntity.setPrice(
+                (foundProductEntity.getPrice().multiply(BigDecimal.valueOf(discount)).divide(BigDecimal.valueOf(100)))
+        );
+        productRepository.save(foundProductEntity);
+        return true;
+    }
+
+    @Override
+    public boolean updateProductStockByPid(Integer pid, Integer stock){
+        checkInvalidInputExceptionByStockInteger(stock);
+        ProductEntity foundProductEntity = productRepository.findById(pid).get();
+        foundProductEntity.setStock(stock);
+        productRepository.save(foundProductEntity);
+        return true;
+    }
+
+    @Override
+    public boolean deductProductStockByPid(Integer pid, Integer stock){
+        checkInvalidInputExceptionByStockInteger(stock);
+        ProductEntity foundProductEntity = productRepository.findById(pid).get();
+        Integer modifiedStock = foundProductEntity.getStock() - stock;
+        if(modifiedStock < 0){
+            return false;
+        }
+        foundProductEntity.setStock(modifiedStock);
+        productRepository.save(foundProductEntity);
+        return true;
+    }
+
+    @Override
+    public boolean deleteProductByPid(Integer pid){
+        for(ProductEntity productEntity : productRepository.findAll()){
+            if(productEntity.getPid().equals(pid)){
+                productRepository.delete(productEntity);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public List<ProductResData> deleteOutOfStockProduct(){
+        List<ProductResData> productResDataList = new ArrayList<>();
+        for(ProductEntity productEntity : productRepository.findAll()){
+            if(productEntity.getStock() <= 0 ){
+                productResDataList.add(new ProductResData(productEntity));
+                productRepository.delete(productEntity);
+            }
+        }
+        return productResDataList;
+    }
+
+    //Exceptions
     public void checkDataMissingExceptionByCreateProductReqData(CreateProductReqData data){
         if(data.getName().isEmpty() ||
                 data.getPrice() == null ||
@@ -68,4 +138,11 @@ public class ProductServiceImpl implements ProductService {
             throw new InvalidInputException();
         }
     }
+
+    public void checkInvalidInputExceptionByDiscountInteger(Integer discount){
+        if(discount <= 0 || discount >= 100){
+            throw new InvalidInputException();
+        }
+    }
+
 }

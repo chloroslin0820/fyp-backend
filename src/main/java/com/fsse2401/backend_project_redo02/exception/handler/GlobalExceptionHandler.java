@@ -10,20 +10,35 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
     Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+    @ExceptionHandler({NoHandlerFoundException.class})
+    @ResponseBody
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleNoHandlerFoundException(NoHandlerFoundException e){
+        logger.warn(e.toString());
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setTimestamps(LocalDateTime.now().toString());
+        errorResponse.setStatus(HttpStatus.NOT_FOUND.value());
+        errorResponse.setError(HttpStatus.NOT_FOUND);
+        errorResponse.setPath(e.toString());
+        return errorResponse;
+    }
+
     @ExceptionHandler(NullPointerException.class)
     @ResponseBody
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleErrorResponse(NullPointerException e){
+    public ErrorResponse handleNullPointerException(NullPointerException e){
         logger.warn(e.toString());
         ErrorResponse errorResponse = new ErrorResponse();
-        errorResponse.setTimestamps(LocalDateTime.now());
+        errorResponse.setTimestamps(LocalDateTime.now().toString());
         errorResponse.setStatus(HttpStatus.NOT_FOUND.value());
         errorResponse.setError(HttpStatus.NOT_FOUND);
         errorResponse.setPath(e.toString());
@@ -33,10 +48,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataMissingException.class)
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleErrorResponse(DataMissingException e){
+    public ErrorResponse handleDataMissingException(DataMissingException e){
         logger.warn(e.toString());
         ErrorResponse errorResponse = new ErrorResponse();
-        errorResponse.setTimestamps(LocalDateTime.now());
+        errorResponse.setTimestamps(LocalDateTime.now().toString());
         errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
         errorResponse.setError(HttpStatus.BAD_REQUEST);
         errorResponse.setPath(e.toString());
@@ -46,12 +61,25 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidInputException.class)
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleErrorResponse(InvalidInputException e){
+    public ErrorResponse handleInvalidInputException(InvalidInputException e){
         logger.warn(e.toString());
         ErrorResponse errorResponse = new ErrorResponse();
-        errorResponse.setTimestamps(LocalDateTime.now());
+        errorResponse.setTimestamps(LocalDateTime.now().toString());
         errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
         errorResponse.setError(HttpStatus.BAD_REQUEST);
+        errorResponse.setPath(e.toString());
+        return errorResponse;
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleNoSuchElementException(NoSuchElementException e){
+        logger.warn(e.toString());
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setTimestamps(LocalDateTime.now().toString());
+        errorResponse.setStatus(HttpStatus.NOT_FOUND.value());
+        errorResponse.setError(HttpStatus.NOT_FOUND);
         errorResponse.setPath(e.toString());
         return errorResponse;
     }
