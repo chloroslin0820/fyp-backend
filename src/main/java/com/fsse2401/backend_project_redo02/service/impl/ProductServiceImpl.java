@@ -33,7 +33,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResData getProductByPid(Integer pid){
-        return new ProductResData(productRepository.findById(pid).get());
+        return new ProductResData(getProductEntityByPid(pid));
     }
 
     @Override
@@ -112,11 +112,17 @@ public class ProductServiceImpl implements ProductService {
         return productResDataList;
     }
 
+    //Repository
+    @Override
+    public ProductEntity getProductEntityByPid(Integer pid){
+        return productRepository.findById(pid).get();
+    }
+
     //Exceptions
     public void checkDataMissingExceptionByCreateProductReqData(CreateProductReqData data){
-        if(data.getName().isEmpty() ||
-                data.getPrice() == null ||
-                data.getStock() == null){
+        if(data.getName().isEmpty()
+                || data.getPrice() == null
+                || data.getStock() == null){
             throw new DataMissingException();
         }
     }
