@@ -1,7 +1,10 @@
 package com.fsse2401.backend_project_redo02.data.user.entity;
 
+import com.fsse2401.backend_project_redo02.data.cartItem.entity.CartItemEntity;
 import com.fsse2401.backend_project_redo02.data.user.domainObject.FirebaseUserData;
 import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "user")
@@ -13,6 +16,8 @@ public class UserEntity {
     private String firebaseUid;
     @Column(nullable = false)
     private String email;
+    @OneToMany(mappedBy = "user")
+    private List<CartItemEntity> cartItemBuying;
 
     public UserEntity(String firebaseUid, String email) {
         this.firebaseUid = firebaseUid;
@@ -49,5 +54,13 @@ public class UserEntity {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public List<CartItemEntity> getCartItemBuying() {
+        return cartItemBuying;
+    }
+
+    public void setCartItemBuying(List<CartItemEntity> cartItemBuying) {
+        this.cartItemBuying = cartItemBuying;
     }
 }
