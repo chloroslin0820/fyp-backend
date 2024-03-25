@@ -7,7 +7,6 @@ import com.fsse2401.backend_project_redo02.data.transactionProduct.entity.Transa
 import java.util.List;
 
 public interface TransactionProductService {
-    boolean deductProductStock(Integer tid, List<CartItemEntity> foundCartItemEntityList);
 
     //Repository
     TransactionProductEntity getTransactionProductEntityByCartItemEntityAndTransactionEntity(

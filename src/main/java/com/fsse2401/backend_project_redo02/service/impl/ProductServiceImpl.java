@@ -7,6 +7,7 @@ import com.fsse2401.backend_project_redo02.exception.DataMissingException;
 import com.fsse2401.backend_project_redo02.exception.InvalidInputException;
 import com.fsse2401.backend_project_redo02.repository.ProductRepository;
 import com.fsse2401.backend_project_redo02.service.ProductService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -119,9 +120,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductEntity saveDeductedStock(Integer quantity, ProductEntity foundProductEntity){
-        Integer foundProductStock = getProductEntityByPid(foundProductEntity.getPid()).getStock();
-        Integer deductedStock = foundProductStock - quantity;
+    public ProductEntity saveProductEntityByDeductedStockAndFoundProductEntity(Integer deductedStock, ProductEntity foundProductEntity){
         foundProductEntity.setStock(deductedStock);
         productRepository.save(foundProductEntity);
         return foundProductEntity;

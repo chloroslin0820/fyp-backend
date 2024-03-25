@@ -97,20 +97,14 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
-    public List<CartItemEntity> getCartItemEntityListByUserEntity(UserEntity foundUserEntity){
-        return cartItemRepository.findAllByUser(foundUserEntity);
-    }
-
-    @Override
     public List<CartItemEntity> getCartItemEntityListByUserId(Integer uid){
         return cartItemRepository.findAllByUserUid(uid);
     }
 
     @Override
     @Transactional
-    public Boolean deleteCartItemEntityByUid(Integer uid){
+    public void deleteCartItemEntityByUid(Integer uid){
         cartItemRepository.deleteByUserUid(uid);
-        return true;
     }
 
     //Exception

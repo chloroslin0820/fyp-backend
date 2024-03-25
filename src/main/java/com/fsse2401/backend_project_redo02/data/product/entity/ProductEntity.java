@@ -1,10 +1,12 @@
 package com.fsse2401.backend_project_redo02.data.product.entity;
 
+import com.fsse2401.backend_project_redo02.data.cartItem.entity.CartItemEntity;
 import com.fsse2401.backend_project_redo02.data.product.domainObject.CreateProductReqData;
 import com.fsse2401.backend_project_redo02.data.transactionProduct.entity.TransactionProductEntity;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Table(name = "product")
@@ -20,6 +22,8 @@ public class ProductEntity {
     private BigDecimal price;
     @Column(nullable = false)
     private Integer stock;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
+    private List<CartItemEntity> cartItemJoining;
 
     public ProductEntity(CreateProductReqData data) {
         this.name = data.getName();
@@ -87,5 +91,13 @@ public class ProductEntity {
 
     public void setStock(Integer stock) {
         this.stock = stock;
+    }
+
+    public List<CartItemEntity> getCartItemJoining() {
+        return cartItemJoining;
+    }
+
+    public void setCartItemJoining(List<CartItemEntity> cartItemJoining) {
+        this.cartItemJoining = cartItemJoining;
     }
 }

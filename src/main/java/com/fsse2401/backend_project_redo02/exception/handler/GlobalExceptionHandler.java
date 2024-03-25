@@ -1,6 +1,6 @@
 package com.fsse2401.backend_project_redo02.exception.handler;
 
-import com.fsse2401.backend_project_redo02.exception.AlreadyProcessingException;
+import com.fsse2401.backend_project_redo02.exception.AlreadyProcessingOrSucessException;
 import com.fsse2401.backend_project_redo02.exception.DataMissingException;
 import com.fsse2401.backend_project_redo02.exception.InvalidInputException;
 import com.fsse2401.backend_project_redo02.exception.OutOfStockException;
@@ -115,10 +115,10 @@ public class GlobalExceptionHandler {
         return errorResponse;
     }
 
-    @ExceptionHandler(AlreadyProcessingException.class)
+    @ExceptionHandler(AlreadyProcessingOrSucessException.class)
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleAlreadyProcessingException(AlreadyProcessingException e){
+    public ErrorResponse handleAlreadyProcessingOrSucessException(AlreadyProcessingOrSucessException e){
         logger.warn(e.toString());
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setTimestamps(LocalDateTime.now().toString());

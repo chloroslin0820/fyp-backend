@@ -1,18 +1,17 @@
 package com.fsse2401.backend_project_redo02.service.impl;
 
 import com.fsse2401.backend_project_redo02.data.cartItem.entity.CartItemEntity;
+import com.fsse2401.backend_project_redo02.data.product.entity.ProductEntity;
 import com.fsse2401.backend_project_redo02.data.transaction.domainObject.TransactionResData;
 import com.fsse2401.backend_project_redo02.data.transaction.entity.TransactionEntity;
 import com.fsse2401.backend_project_redo02.data.transaction.status.TransactionStatus;
 import com.fsse2401.backend_project_redo02.data.transactionProduct.entity.TransactionProductEntity;
 import com.fsse2401.backend_project_redo02.data.user.domainObject.FirebaseUserData;
 import com.fsse2401.backend_project_redo02.data.user.entity.UserEntity;
-import com.fsse2401.backend_project_redo02.exception.AlreadyProcessingException;
+import com.fsse2401.backend_project_redo02.exception.AlreadyProcessingOrSucessException;
+import com.fsse2401.backend_project_redo02.exception.OutOfStockException;
 import com.fsse2401.backend_project_redo02.repository.TransactionRepository;
-import com.fsse2401.backend_project_redo02.service.CartItemService;
-import com.fsse2401.backend_project_redo02.service.TransactionProductService;
-import com.fsse2401.backend_project_redo02.service.TransactionService;
-import com.fsse2401.backend_project_redo02.service.UserService;
+import com.fsse2401.backend_project_redo02.service.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,15 +25,18 @@ public class TransactionServiceImpl implements TransactionService {
     private final TransactionRepository transactionRepository;
     private final UserService userService;
     private final CartItemService cartItemService;
+    private final ProductService productService;
     private final TransactionProductService transactionProductService;
     @Autowired
     public TransactionServiceImpl(TransactionRepository transactionRepository,
                                   UserService userService,
                                   CartItemService cartItemService,
+                                  ProductService productService,
                                   TransactionProductService transactionProductService){
         this.transactionRepository = transactionRepository;
         this.userService = userService;
         this.cartItemService = cartItemService;
+        this.productService = productService;
         this.transactionProductService = transactionProductService;
     }
 
@@ -45,7 +47,7 @@ public class TransactionServiceImpl implements TransactionService {
                         firebaseUserData
                 );
         List<CartItemEntity> foundCartItemEntityList =
-                cartItemService.getCartItemEntityListByUserEntity(foundUserEntity);
+                cartItemService.getCartItemEntityListByUserId(foundUserEntity.getUid());
         List<TransactionProductEntity> items = new ArrayList<>();
         TransactionEntity setTransactionEntity = new TransactionEntity(foundUserEntity, items);
         for(CartItemEntity cartItemEntity : foundCartItemEntityList){
@@ -78,31 +80,50 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public boolean payTransaction(FirebaseUserData firebaseUserData, Integer tid){
         TransactionEntity foundTransactionEntity = getTransactionEntityByTid(tid);
+        checkAlreadyProcessingOrSuccessException(foundTransactionEntity);
         UserEntity foundUser = foundTransactionEntity.getUser();
-        TransactionStatus foundProcessStatus = foundTransactionEntity.getStatus();
-        if(!foundProcessStatus.equals(TransactionStatus.PROCESSING)){
-            List<CartItemEntity> foundCartItemEntityList = cartItemService.getCartItemEntityListByUserEntity(foundUser);
+        for(CartItemEntity cartItemEntity : cartItemService.getCartItemEntityListByUserId(foundUser.getUid())){
+            Integer deductedStock = cartItemEntity.getProduct().getStock() - cartItemEntity.getQuantity();
+            checkOutOfStockByCountedStockException(deductedStock);
+            ProductEntity foundProductEntity = cartItemEntity.getProduct();
             foundTransactionEntity.setStatus(TransactionStatus.PROCESSING);
-            return transactionProductService.deductProductStock(foundTransactionEntity.getTid(), foundCartItemEntityList);
-        }else{
-            throw new AlreadyProcessingException();
+            productService.saveProductEntityByDeductedStockAndFoundProductEntity(
+                    deductedStock, foundProductEntity);
         }
+        return true;
     }
 
     @Override
     @Transactional
     public TransactionResData finishTransaction(FirebaseUserData firebaseUserData, Integer tid){
-        TransactionEntity foundTransactionEntity = transactionRepository.findByStatusAndTid(TransactionStatus.PROCESSING, tid).get();
+        TransactionEntity foundTransactionEntity = getTransactionEntityByStatusAndTid(tid);
         foundTransactionEntity.setStatus(TransactionStatus.SUCCESS);
-        List<CartItemEntity> foundCartItemEntityList = cartItemService.getCartItemEntityListByUserId(foundTransactionEntity.getUser().getUid());
-        for(CartItemEntity cartItemEntity : foundCartItemEntityList){
-            cartItemService.deleteCartItemEntityByUid(foundTransactionEntity.getUser().getUid());
-        }
+        cartItemService.deleteCartItemEntityByUid(
+                foundTransactionEntity.getUser().getUid());
         return new TransactionResData(foundTransactionEntity);
     }
 
     //Repository
     public TransactionEntity getTransactionEntityByTid(Integer tid){
         return transactionRepository.findById(tid).get();
+    }
+
+    public TransactionEntity getTransactionEntityByStatusAndTid(Integer tid){
+        return transactionRepository.findByStatusAndTid(TransactionStatus.PROCESSING, tid).get();
+    }
+
+    //Exception
+    public void checkAlreadyProcessingOrSuccessException(
+            TransactionEntity foundTransactionEntity){
+        if(foundTransactionEntity.getStatus().equals(TransactionStatus.PROCESSING)
+                ||foundTransactionEntity.getStatus().equals(TransactionStatus.SUCCESS)){
+            throw new AlreadyProcessingOrSucessException();
+        }
+    }
+
+    public void checkOutOfStockByCountedStockException(Integer countedStock){
+        if(countedStock < 0){
+            throw new OutOfStockException();
+        }
     }
 }
