@@ -11,6 +11,8 @@ import com.fsse2401.backend_project_redo02.repository.CartItemRepository;
 import com.fsse2401.backend_project_redo02.service.CartItemService;
 import com.fsse2401.backend_project_redo02.service.ProductService;
 import com.fsse2401.backend_project_redo02.service.UserService;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -57,7 +59,9 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Override
     public List<CartItemResData> getUserCart(FirebaseUserData firebaseUserData){
-        UserEntity foundUserEntity = userService.getUserEntityByFirebaseUserData(firebaseUserData);
+        UserEntity foundUserEntity =
+                userService.getUserEntityOrElseSaveUserEntityByFirebaseUserData(
+                        firebaseUserData);
         List<CartItemResData> cartItemResDataList = new ArrayList<>();
         for(CartItemEntity entity : foundUserEntity.getCartItemBuying()){
             cartItemResDataList.add(new CartItemResData(entity));
@@ -89,7 +93,24 @@ public class CartItemServiceImpl implements CartItemService {
     //Repository
     @Override
     public CartItemEntity getCartItemEntityByUserFirebaseUidAndProductPid(String firebaseUid, Integer pid){
-        return cartItemRepository.findByUser_FirebaseUidAndProduct_Pid(firebaseUid, pid).get();
+        return cartItemRepository.findByUser_FirebaseUidAndProduct_Pid(firebaseUid, pid).orElseThrow(EntityNotFoundException::new);
+    }
+
+    @Override
+    public List<CartItemEntity> getCartItemEntityListByUserEntity(UserEntity foundUserEntity){
+        return cartItemRepository.findAllByUser(foundUserEntity);
+    }
+
+    @Override
+    public List<CartItemEntity> getCartItemEntityListByUserId(Integer uid){
+        return cartItemRepository.findAllByUserUid(uid);
+    }
+
+    @Override
+    @Transactional
+    public Boolean deleteCartItemEntityByUid(Integer uid){
+        cartItemRepository.deleteByUserUid(uid);
+        return true;
     }
 
     //Exception

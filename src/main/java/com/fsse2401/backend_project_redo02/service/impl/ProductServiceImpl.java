@@ -118,6 +118,15 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findById(pid).get();
     }
 
+    @Override
+    public ProductEntity saveDeductedStock(Integer quantity, ProductEntity foundProductEntity){
+        Integer foundProductStock = getProductEntityByPid(foundProductEntity.getPid()).getStock();
+        Integer deductedStock = foundProductStock - quantity;
+        foundProductEntity.setStock(deductedStock);
+        productRepository.save(foundProductEntity);
+        return foundProductEntity;
+    }
+
     //Exceptions
     public void checkDataMissingExceptionByCreateProductReqData(CreateProductReqData data){
         if(data.getName().isEmpty()

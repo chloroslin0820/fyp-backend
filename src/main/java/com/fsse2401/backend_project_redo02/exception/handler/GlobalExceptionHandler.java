@@ -1,9 +1,11 @@
 package com.fsse2401.backend_project_redo02.exception.handler;
 
+import com.fsse2401.backend_project_redo02.exception.AlreadyProcessingException;
 import com.fsse2401.backend_project_redo02.exception.DataMissingException;
 import com.fsse2401.backend_project_redo02.exception.InvalidInputException;
 import com.fsse2401.backend_project_redo02.exception.OutOfStockException;
 import com.fsse2401.backend_project_redo02.exception.errorResponse.ErrorResponse;
+import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -60,6 +62,19 @@ public class GlobalExceptionHandler {
         return errorResponse;
     }
 
+    @ExceptionHandler(EntityNotFoundException.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleEntityNotFoundException(EntityNotFoundException e){
+        logger.warn(e.toString());
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setTimestamps(LocalDateTime.now().toString());
+        errorResponse.setStatus(HttpStatus.NOT_FOUND.value());
+        errorResponse.setError(HttpStatus.NOT_FOUND);
+        errorResponse.setPath(e.toString());
+        return errorResponse;
+    }
+
     //BAD_REQUEST
     @ExceptionHandler(DataMissingException.class)
     @ResponseBody
@@ -91,6 +106,19 @@ public class GlobalExceptionHandler {
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleOutOfStockException(OutOfStockException e){
+        logger.warn(e.toString());
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setTimestamps(LocalDateTime.now().toString());
+        errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+        errorResponse.setError(HttpStatus.BAD_REQUEST);
+        errorResponse.setPath(e.toString());
+        return errorResponse;
+    }
+
+    @ExceptionHandler(AlreadyProcessingException.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleAlreadyProcessingException(AlreadyProcessingException e){
         logger.warn(e.toString());
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setTimestamps(LocalDateTime.now().toString());

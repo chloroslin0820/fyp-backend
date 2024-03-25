@@ -1,6 +1,7 @@
 package com.fsse2401.backend_project_redo02.data.user.entity;
 
 import com.fsse2401.backend_project_redo02.data.cartItem.entity.CartItemEntity;
+import com.fsse2401.backend_project_redo02.data.transaction.entity.TransactionEntity;
 import com.fsse2401.backend_project_redo02.data.user.domainObject.FirebaseUserData;
 import jakarta.persistence.*;
 
@@ -18,6 +19,8 @@ public class UserEntity {
     private String email;
     @OneToMany(mappedBy = "user")
     private List<CartItemEntity> cartItemBuying;
+    @OneToMany(mappedBy = "user")
+    private List<TransactionEntity> transactionJoining;
 
     public UserEntity(String firebaseUid, String email) {
         this.firebaseUid = firebaseUid;
@@ -25,6 +28,7 @@ public class UserEntity {
     }
 
     public UserEntity(FirebaseUserData firebaseUserData) {
+        this.uid = this.getUid();
         this.firebaseUid = firebaseUserData.getFirebaseUid();
         this.email = firebaseUserData.getEmail();
     }
@@ -62,5 +66,13 @@ public class UserEntity {
 
     public void setCartItemBuying(List<CartItemEntity> cartItemBuying) {
         this.cartItemBuying = cartItemBuying;
+    }
+
+    public List<TransactionEntity> getTransactionJoining() {
+        return transactionJoining;
+    }
+
+    public void setTransactionJoining(List<TransactionEntity> transactionJoining) {
+        this.transactionJoining = transactionJoining;
     }
 }

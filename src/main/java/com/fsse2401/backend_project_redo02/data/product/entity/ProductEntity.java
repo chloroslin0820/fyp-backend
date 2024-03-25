@@ -1,6 +1,7 @@
 package com.fsse2401.backend_project_redo02.data.product.entity;
 
 import com.fsse2401.backend_project_redo02.data.product.domainObject.CreateProductReqData;
+import com.fsse2401.backend_project_redo02.data.transactionProduct.entity.TransactionProductEntity;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -26,6 +27,15 @@ public class ProductEntity {
         this.imgUrl = data.getImgUrl();
         this.price = data.getPrice();
         this.stock = data.getStock();
+    }
+
+    public ProductEntity(TransactionProductEntity transactionProductEntity) {
+        this.pid = transactionProductEntity.getPid();
+        this.name = transactionProductEntity.getName();
+        this.description = transactionProductEntity.getDescription();
+        this.imgUrl = transactionProductEntity.getImgUrl();
+        this.price = transactionProductEntity.getPrice();
+        this.stock = transactionProductEntity.getStock();
     }
 
     public ProductEntity() {

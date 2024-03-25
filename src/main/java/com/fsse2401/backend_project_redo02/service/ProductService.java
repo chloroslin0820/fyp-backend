@@ -28,4 +28,6 @@ public interface ProductService {
 
     //Repository
     ProductEntity getProductEntityByPid(Integer pid);
+
+    ProductEntity saveDeductedStock(Integer quantity, ProductEntity foundProductEntity);
 }

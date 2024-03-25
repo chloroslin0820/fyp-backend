@@ -3,6 +3,8 @@ package com.fsse2401.backend_project_redo02.service;
 import com.fsse2401.backend_project_redo02.data.cartItem.domainOnject.CartItemResData;
 import com.fsse2401.backend_project_redo02.data.cartItem.entity.CartItemEntity;
 import com.fsse2401.backend_project_redo02.data.user.domainObject.FirebaseUserData;
+import com.fsse2401.backend_project_redo02.data.user.entity.UserEntity;
+import jakarta.transaction.Transactional;
 
 import java.util.List;
 
@@ -17,4 +19,11 @@ public interface CartItemService {
 
     //Repository
     CartItemEntity getCartItemEntityByUserFirebaseUidAndProductPid(String firebaseUid, Integer pid);
+
+    List<CartItemEntity> getCartItemEntityListByUserEntity(UserEntity foundUserEntity);
+
+    List<CartItemEntity> getCartItemEntityListByUserId(Integer uid);
+
+    @Transactional
+    Boolean deleteCartItemEntityByUid(Integer uid);
 }

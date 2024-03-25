@@ -1,6 +1,7 @@
 package com.fsse2401.backend_project_redo02.data.product.domainObject;
 
 import com.fsse2401.backend_project_redo02.data.product.entity.ProductEntity;
+import com.fsse2401.backend_project_redo02.data.transactionProduct.entity.TransactionProductEntity;
 
 import java.math.BigDecimal;
 
