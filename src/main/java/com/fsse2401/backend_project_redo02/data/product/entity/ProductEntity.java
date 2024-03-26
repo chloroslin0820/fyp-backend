@@ -22,7 +22,7 @@ public class ProductEntity {
     private BigDecimal price;
     @Column(nullable = false)
     private Integer stock;
-    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<CartItemEntity> cartItemJoining;
 
     public ProductEntity(CreateProductReqData data) {
