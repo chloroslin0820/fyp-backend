@@ -1,5 +1,6 @@
 package com.fsse2401.backend_project_redo02.api;
 
+import com.fsse2401.backend_project_redo02.config.EnvConfig;
 import com.fsse2401.backend_project_redo02.data.cartItem.domainOnject.CartItemResData;
 import com.fsse2401.backend_project_redo02.data.cartItem.domainOnject.StatusCartItemResData;
 import com.fsse2401.backend_project_redo02.data.cartItem.dto.CartItemResDto;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/cart")
+@CrossOrigin({EnvConfig.DEV_BASE_URL, EnvConfig.PROD_BASE_URL, EnvConfig.PROD_S3_BASE_URL})
 public class CartItemApi {
     private final CartItemService cartItemService;
     @Autowired
